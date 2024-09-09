@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://vmhf5g4af7bg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2ac2o"]
+size = Vector2(16, 16)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_xlhph"]
+frequency = 0.0894
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_4vf6q"]
+width = 128
+height = 128
+generate_mipmaps = false
+noise = SubResource("FastNoiseLite_xlhph")
+
+[node name="Dirt" type="StaticBody2D"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_2ac2o")
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+position = Vector2(8, 8)
+color = Color(0.653157, 0.671729, 0.386995, 1)
+texture = SubResource("NoiseTexture2D_4vf6q")
+texture_offset = Vector2(32, 32)
+polygon = PackedVector2Array(-16, 0, 0, 0, 0, -16, -16, -16)

@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=4 uid="uid://ct324px7lwytk"]
+
+[ext_resource type="PackedScene" uid="uid://vmhf5g4af7bg" path="res://scenes/dirt.tscn" id="1_jrxdy"]
+[ext_resource type="PackedScene" uid="uid://jt5c3pyfpspx" path="res://scenes/kaladin.tscn" id="2_5vt40"]
+
+[sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_agrqk"]
+scenes/2/scene = ExtResource("1_jrxdy")
+
+[sub_resource type="TileSet" id="TileSet_6lm7c"]
+sources/0 = SubResource("TileSetScenesCollectionSource_agrqk")
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Map" type="TileMapLayer" parent="."]
+position = Vector2(0, 16)
+tile_map_data = PackedByteArray("AAAAAP//AAAAAAAAAgD/////AAAAAAAAAgD+////AAAAAAAAAgABAP//AAAAAAAAAgABAAAAAAAAAAAAAgAAAAAAAAAAAAAAAgD//wAAAAAAAAAAAgD+/wAAAAAAAAAAAgD9////AAAAAAAAAgD9/wAAAAAAAAAAAgD8////AAAAAAAAAgD7////AAAAAAAAAgD6////AAAAAAAAAgD5////AAAAAAAAAgD4////AAAAAAAAAgD3////AAAAAAAAAgD2////AAAAAAAAAgACAP//AAAAAAAAAgADAP//AAAAAAAAAgAEAP//AAAAAAAAAgAFAP//AAAAAAAAAgAGAP//AAAAAAAAAgAHAP//AAAAAAAAAgAIAP//AAAAAAAAAgAJAP//AAAAAAAAAgAKAP//AAAAAAAAAgALAP//AAAAAAAAAgA=")
+tile_set = SubResource("TileSet_6lm7c")
+
+[node name="Kaladin" parent="." instance=ExtResource("2_5vt40")]
+position = Vector2(0, -21)
