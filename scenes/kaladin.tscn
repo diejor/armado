@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://jt5c3pyfpspx"]
+[gd_scene load_steps=3 format=3 uid="uid://jt5c3pyfpspx"]
 
 [ext_resource type="Script" path="res://scripts/kaladin.gd" id="1_wmacu"]
 
@@ -6,40 +6,12 @@
 radius = 5.0
 height = 17.0
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_a5jot"]
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_fgh3x"]
-noise = SubResource("FastNoiseLite_a5jot")
-
 [node name="Kaladin" type="RigidBody2D"]
 script = ExtResource("1_wmacu")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -0.5)
 shape = SubResource("CapsuleShape2D_580mn")
-
-[node name="Art" type="Node2D" parent="."]
-scale = Vector2(2, 2)
-
-[node name="silhouette" type="Polygon2D" parent="Art"]
-position = Vector2(3, 3)
-color = Color(0.348997, 0.54706, 1, 1)
-polygon = PackedVector2Array(-1, -7, 1, -4, 3, -3, 1.0302, -2.3434, 0, -2, -1, -1, 0, 1, -2, 0, -4, 1, -5, 0, -7, -1, -6, -1, -8, -2, -6, -2, -9, -3, -7, -3, -10, -4, -8, -4, -11, -5, -7, -5, -9, -7, -6, -5, -7, -9, -5, -6, -6, -12, -4, -6, -4, -9, -3, -7, -2, -9)
-
-[node name="eyes" type="Polygon2D" parent="Art"]
-position = Vector2(3, 3)
-color = Color(0.277528, 0.277528, 0.277528, 1)
-polygon = PackedVector2Array(-1, -4, 0, -5, 1, -4, 0, -4)
-
-[node name="mouth" type="Polygon2D" parent="Art"]
-position = Vector2(3, 3)
-color = Color(1, 0.571163, 0.763828, 1)
-polygon = PackedVector2Array(1, -2, 0, -3, 2, -2)
-
-[node name="Polygon2D" type="Polygon2D" parent="Art"]
-color = Color(0.666246, 0.581923, 0.587512, 1)
-texture = SubResource("NoiseTexture2D_fgh3x")
-polygon = PackedVector2Array(-2, 3, -4, 2, -3, 2, -5, 1, -3, 1, -6, 0, -4, 0, -7, -1, -5, -1, -8, -2, -4, -2, -6, -4, -3, -2, -4, -6, -2, -3, -3, -9, -1, -3, -1, -6, 0, -4, 1, -6, 2, -4, 0, -3, -2, -2, -3, -1, -2, 1, -1, 2)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(10, 10)
