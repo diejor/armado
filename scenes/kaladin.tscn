@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" path="res://scripts/kaladin.gd" id="1_wmacu"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_r7qcc"]
-radius = 3.0
-height = 8.0
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_580mn"]
+radius = 5.0
+height = 17.0
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_a5jot"]
 
@@ -15,9 +15,11 @@ noise = SubResource("FastNoiseLite_a5jot")
 script = ExtResource("1_wmacu")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CapsuleShape2D_r7qcc")
+position = Vector2(0, -0.5)
+shape = SubResource("CapsuleShape2D_580mn")
 
 [node name="Art" type="Node2D" parent="."]
+scale = Vector2(2, 2)
 
 [node name="silhouette" type="Polygon2D" parent="Art"]
 position = Vector2(3, 3)
