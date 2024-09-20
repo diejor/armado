@@ -6,7 +6,7 @@ extends RigidBody2D
 @export var JUMP_FORCE = 100           # Base strength of the jump
 @export var DEBUG_MODE = true          # Toggle debug visualization
 @export var DRAW_SCALE = 0.5
-@export var DAMPING_COEFFICIENT = 0.5 # Damping coefficient for velocity
+@export var DAMPING_COEFFICIENT = 5.0 # Damping coefficient for velocity
 @export var HORIZONTAL_TO_VERTICAL_RATIO = 0.2 # Ratio of horizontal to vertical velocity transfer on jump
 @export var AIR_CONTROL_MULTIPLIER = 0.3  # Multiplier for air control (30% of ground force)
 
@@ -28,7 +28,7 @@ func _ready() -> void:
 # === Process Function ===
 func _process(delta: float) -> void:
 	# Detect jump input
-	if Input.is_action_just_pressed("jump"):
+	if Input.is_action_just_pressed("jump") and on_ground:
 		jump_requested = true
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
@@ -38,14 +38,10 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	# Retrieve the total gravity applied to the body
 	gravity_force = state.get_total_gravity()
 
-	# Initialize normal force accumulator
-	normal_force_total = Vector2.ZERO
+	var was_on_ground = on_ground
 	on_ground = false  # Reset ground contact flag each frame
 
-	# Retrieve contact information
-	var contact_count = state.get_contact_count()
-	
-	for i in range(contact_count):
+	for i in range(state.get_contact_count()):
 		# Retrieve contact positions and normals in **local coordinates**
 		var local_contact_point = self.to_local(state.get_contact_local_position(i))
 		var local_contact_normal = state.get_contact_local_normal(i).normalized()
@@ -53,16 +49,27 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		contact_points.append(local_contact_point)
 		contact_normals.append(local_contact_normal)
 		
-		# Project gravity onto the contact normal to get the normal force component
-		var projected_normal = gravity_force.project(local_contact_normal)
-		normal_force_total += projected_normal
-		
-		# Check if the contact normal indicates ground contact
-		if local_contact_normal.y < 0:
-			on_ground = true
+	var add = func(acc, a):
+		if a.project(Vector2.UP).length_squared() < 0.1:
+			return acc
+		return acc + a
+	var res_normal = contact_normals.reduce(add, Vector2.ZERO).normalized()
+
+	if res_normal.y < 0:
+		on_ground = true
 
 	# Apply the total normal force to counteract gravity
-	state.apply_central_force(-normal_force_total * 0.5)
+	state.apply_central_force(-gravity_force.project(res_normal* 0.5))
+
+	print("current vel: ", state.get_linear_velocity())
+	
+	if not was_on_ground and on_ground:
+		print("Landed")
+		var velocity = state.get_linear_velocity()
+		print("Velocity: ", velocity)
+		var slide = velocity.slide(res_normal)
+		print("Slide: ", slide)
+		state.set_linear_velocity(slide)
 
 	# Get current velocity
 	var current_velocity = state.get_linear_velocity()
@@ -85,15 +92,6 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	if not on_ground:
 		applied_force *= AIR_CONTROL_MULTIPLIER
 
-	var add = func(acc, a):
-		if a.project(Vector2.UP).length_squared() < 0.1:
-			return acc
-		return acc + a
-	var res = contact_normals.reduce(add, Vector2.ZERO).normalized()
-	if res != Vector2.ZERO:
-		applied_force = applied_force.slide(res)
-		
-
 	# Apply the adjusted force
 	state.apply_central_force(applied_force)
 
@@ -105,11 +103,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		state.apply_central_force(damping_force)
 
 	if jump_requested and on_ground:
-		# Calculate the jump impulse based on JUMP_FORCE and factor
-		var jump_impulse = res * JUMP_FORCE
-
-		# Apply the vertical jump impulse
-		state.apply_central_impulse(jump_impulse)
+		state.apply_central_impulse(JUMP_FORCE * res_normal)
 
 		# Get current velocity
 		var velocity = state.get_linear_velocity()
@@ -118,13 +112,12 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		var horizontal_velocity = velocity.x  # Velocity perpendicular to res
 
 		# Calculate transfer amount based on the defined ratio
-		var transfer_amount = abs(horizontal_velocity) * HORIZONTAL_TO_VERTICAL_RATIO
-		velocity.x -= transfer_amount * sign(horizontal_velocity) * (2 - HORIZONTAL_TO_VERTICAL_RATIO)
+		var transfer_velocity = abs(horizontal_velocity) * HORIZONTAL_TO_VERTICAL_RATIO
+		velocity.x -= transfer_velocity * sign(horizontal_velocity) * (2 - HORIZONTAL_TO_VERTICAL_RATIO)
+		velocity += res_normal * transfer_velocity
 		state.set_linear_velocity(velocity)
 
-		# Apply the transfer as an impulse along res
-		var transfer_impulse = res * transfer_amount
-		state.apply_central_impulse(transfer_impulse)
+
 
 		# Reset the jump request
 		jump_requested = false

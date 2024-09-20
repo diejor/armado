@@ -27,7 +27,6 @@ tile_set = SubResource("TileSet_6lm7c")
 
 [node name="Kaladin" parent="." instance=ExtResource("2_5vt40")]
 position = Vector2(3, -37)
-DAMPING_COEFFICIENT = 7.44
 
 [node name="Floor" type="StaticBody2D" parent="."]
 
