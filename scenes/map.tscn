@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=4 uid="uid://ct324px7lwytk"]
+[gd_scene load_steps=8 format=4 uid="uid://ct324px7lwytk"]
 
 [ext_resource type="PackedScene" uid="uid://vmhf5g4af7bg" path="res://scenes/dirt.tscn" id="1_jrxdy"]
 [ext_resource type="PackedScene" uid="uid://jt5c3pyfpspx" path="res://scenes/kaladin.tscn" id="2_5vt40"]
+[ext_resource type="PackedScene" uid="uid://dhmaygls8pbnp" path="res://scenes/ramp.tscn" id="3_kp3cb"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_h1j0d"]
 
@@ -14,6 +15,9 @@ physics_layer_0/collision_layer = 1
 physics_layer_0/physics_material = SubResource("PhysicsMaterial_h1j0d")
 sources/0 = SubResource("TileSetScenesCollectionSource_agrqk")
 
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_efkeh"]
+distance = -7.0
+
 [node name="Node2D" type="Node2D"]
 
 [node name="Map" type="TileMapLayer" parent="."]
@@ -22,3 +26,13 @@ tile_map_data = PackedByteArray("AAAAAP//AAAAAAAAAgD/////AAAAAAAAAgD+////AAAAAAA
 tile_set = SubResource("TileSet_6lm7c")
 
 [node name="Kaladin" parent="." instance=ExtResource("2_5vt40")]
+position = Vector2(3, -37)
+DAMPING_COEFFICIENT = 7.44
+
+[node name="Floor" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("WorldBoundaryShape2D_efkeh")
+
+[node name="ramp" parent="." instance=ExtResource("3_kp3cb")]
+position = Vector2(61, 2)

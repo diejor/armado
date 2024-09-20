@@ -1,17 +1,53 @@
-[gd_scene load_steps=3 format=3 uid="uid://jt5c3pyfpspx"]
+[gd_scene load_steps=10 format=3 uid="uid://jt5c3pyfpspx"]
 
 [ext_resource type="Script" path="res://scripts/kaladin.gd" id="1_wmacu"]
+[ext_resource type="Texture2D" uid="uid://qor431lqyi4s" path="res://art/kaladin/kaladin-idle1.png" id="2_0xu3p"]
+[ext_resource type="Texture2D" uid="uid://8ffkuia5bm0p" path="res://art/kaladin/kaladin-idle2.png" id="3_3vv77"]
+[ext_resource type="Texture2D" uid="uid://blt3jp0hlkfe" path="res://art/kaladin/kaladin-idle3.png" id="4_risgp"]
+[ext_resource type="Texture2D" uid="uid://b3skof7i3i5o3" path="res://art/kaladin/kaladin-idle4.png" id="5_c46yh"]
+[ext_resource type="Texture2D" uid="uid://cbx42cvjnoa1f" path="res://art/kaladin/kaladin-idle5.png" id="6_jhp0r"]
+[ext_resource type="Texture2D" uid="uid://cmkxese66da20" path="res://art/kaladin/kaladin-idle6.png" id="7_kfh32"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_a0o8y"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_0xu3p")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_3vv77")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_risgp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_c46yh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_jhp0r")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_kfh32")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_580mn"]
-radius = 5.0
-height = 17.0
+radius = 6.0
+height = 24.0
 
 [node name="Kaladin" type="RigidBody2D"]
 script = ExtResource("1_wmacu")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -0.5)
-shape = SubResource("CapsuleShape2D_580mn")
+DEBUG_MODE = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(10, 10)
+zoom = Vector2(5, 5)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_a0o8y")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 3)
+shape = SubResource("CapsuleShape2D_580mn")

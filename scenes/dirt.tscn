@@ -1,4 +1,7 @@
-[gd_scene format=3 uid="uid://vmhf5g4af7bg"]
+[gd_scene load_steps=2 format=3 uid="uid://vmhf5g4af7bg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lchfh"]
+size = Vector2(2, 2)
 
 [node name="Dirt" type="StaticBody2D"]
 scale = Vector2(4, 4)
@@ -6,5 +9,5 @@ scale = Vector2(4, 4)
 [node name="Polygon2D" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(1, -1, -1, -1, -1, 1, 1, 1)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
-polygon = PackedVector2Array(-1, -1, -1, 1, 1, 1, 1, -1)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_lchfh")
