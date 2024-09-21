@@ -1,0 +1,41 @@
+[gd_scene load_steps=9 format=4 uid="uid://ct324px7lwytk"]
+
+[ext_resource type="Script" path="res://scripts/map.gd" id="1_gtddr"]
+[ext_resource type="PackedScene" uid="uid://vmhf5g4af7bg" path="res://scenes/dirt.tscn" id="2_1ivym"]
+[ext_resource type="PackedScene" uid="uid://jt5c3pyfpspx" path="res://scenes/kaladin.tscn" id="3_6pnt4"]
+[ext_resource type="PackedScene" uid="uid://dhmaygls8pbnp" path="res://scenes/ramp.tscn" id="4_daxer"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_h1j0d"]
+
+[sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_agrqk"]
+scenes/2/scene = ExtResource("2_1ivym")
+
+[sub_resource type="TileSet" id="TileSet_6lm7c"]
+tile_size = Vector2i(8, 8)
+physics_layer_0/collision_layer = 1
+physics_layer_0/physics_material = SubResource("PhysicsMaterial_h1j0d")
+sources/0 = SubResource("TileSetScenesCollectionSource_agrqk")
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_xicx3"]
+distance = -7.0
+
+[node name="DebugScene" type="Node2D"]
+script = ExtResource("1_gtddr")
+
+[node name="Map" type="TileMapLayer" parent="."]
+position = Vector2(0, 16)
+tile_map_data = PackedByteArray("AAAAAP//AAAAAAAAAgD/////AAAAAAAAAgD+////AAAAAAAAAgABAP//AAAAAAAAAgABAAAAAAAAAAAAAgAAAAAAAAAAAAAAAgD//wAAAAAAAAAAAgD+/wAAAAAAAAAAAgD9////AAAAAAAAAgD9/wAAAAAAAAAAAgD8////AAAAAAAAAgD7////AAAAAAAAAgD6////AAAAAAAAAgD5////AAAAAAAAAgD4////AAAAAAAAAgD3////AAAAAAAAAgD2////AAAAAAAAAgACAP//AAAAAAAAAgADAP//AAAAAAAAAgAEAP//AAAAAAAAAgAFAP//AAAAAAAAAgAGAP//AAAAAAAAAgAHAP//AAAAAAAAAgAIAP//AAAAAAAAAgAJAP//AAAAAAAAAgAKAP//AAAAAAAAAgALAP//AAAAAAAAAgD7//7/AAAAAAAAAgD1////AAAAAAAAAgD8//7/AAAAAAAAAgD7//3/AAAAAAAAAgADAAAAAAAAAAAAAgACAAAAAAAAAAAAAgAEAAAAAAAAAAAAAgAFAAAAAAAAAAAAAgD8/wAAAAAAAAAAAgD7/wAAAAAAAAAAAgD6/wAAAAAAAAAAAgD5/wAAAAAAAAAAAgD4/wAAAAAAAAAAAgAGAAAAAAAAAAAAAgAHAAAAAAAAAAAAAgAIAAAAAAAAAAAAAgAJAAAAAAAAAAAAAgAKAAAAAAAAAAAAAgAMAP//AAAAAAAAAgANAP//AAAAAAAAAgAOAP//AAAAAAAAAgAPAP//AAAAAAAAAgALAAAAAAAAAAAAAgAMAAAAAAAAAAAAAgANAAAAAAAAAAAAAgAIAAEAAAAAAAAAAgAHAAEAAAAAAAAAAgAGAAEAAAAAAAAAAgAFAAEAAAAAAAAAAgAEAAEAAAAAAAAAAgADAAEAAAAAAAAAAgACAAEAAAAAAAAAAgABAAEAAAAAAAAAAgAAAAEAAAAAAAAAAgD//wEAAAAAAAAAAgD+/wEAAAAAAAAAAgD9/wEAAAAAAAAAAgD8/wEAAAAAAAAAAgD7/wEAAAAAAAAAAgD6/wEAAAAAAAAAAgD5/wEAAAAAAAAAAgD4/wEAAAAAAAAAAgD3/wAAAAAAAAAAAgD2/wAAAAAAAAAAAgD1/wAAAAAAAAAAAgD0/wAAAAAAAAAAAgD6//7/AAAAAAAAAgD6//3/AAAAAAAAAgD5//z/AAAAAAAAAgD5//3/AAAAAAAAAgD5//7/AAAAAAAAAgD4//7/AAAAAAAAAgD4//3/AAAAAAAAAgD4//z/AAAAAAAAAgD3//z/AAAAAAAAAgD2//z/AAAAAAAAAgD2//3/AAAAAAAAAgD3//3/AAAAAAAAAgD3//7/AAAAAAAAAgD2//7/AAAAAAAAAgD1//3/AAAAAAAAAgD1//z/AAAAAAAAAgD1//7/AAAAAAAAAgD0////AAAAAAAAAgDz////AAAAAAAAAgDy////AAAAAAAAAgDy/wAAAAAAAAAAAgDz/wAAAAAAAAAAAgD0//7/AAAAAAAAAgD0//3/AAAAAAAAAgDz//3/AAAAAAAAAgDy//7/AAAAAAAAAgDz//7/AAAAAAAAAgDx//7/AAAAAAAAAgDx////AAAAAAAAAgDx/wAAAAAAAAAAAgD3/wEAAAAAAAAAAgD2/wEAAAAAAAAAAgD1/wEAAAAAAAAAAgD0/wEAAAAAAAAAAgA=")
+tile_set = SubResource("TileSet_6lm7c")
+
+[node name="Kaladin" parent="." instance=ExtResource("3_6pnt4")]
+position = Vector2(3, -37)
+HORIZONTAL_TO_VERTICAL_RATIO = 0.9
+
+[node name="Floor" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("WorldBoundaryShape2D_xicx3")
+
+[node name="Ramp" parent="." instance=ExtResource("4_daxer")]
+position = Vector2(143, -17)
+scale = Vector2(3.86, 3.86)

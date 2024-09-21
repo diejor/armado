@@ -7,15 +7,17 @@ extends RigidBody2D
 @export var DEBUG_MODE = true          # Toggle debug visualization
 @export var DRAW_SCALE = 0.5
 @export var DAMPING_COEFFICIENT = 5.0 # Damping coefficient for velocity
-@export var HORIZONTAL_TO_VERTICAL_RATIO = 0.2 # Ratio of horizontal to vertical velocity transfer on jump
+@export var HORIZONTAL_TO_VERTICAL_RATIO = 0.9 # Ratio of horizontal to vertical velocity transfer on jump
 @export var AIR_CONTROL_MULTIPLIER = 0.3  # Multiplier for air control (30% of ground force)
 
 # === Internal Variables ===
 var applied_force = Vector2.ZERO
 var gravity_force = Vector2.ZERO
+var velocity_last_frame = Vector2.ZERO
 var contact_points = []
 var contact_normals = []
 var normal_force_total = Vector2.ZERO
+var normal = Vector2.ZERO
 var jump_requested = false              # Flag to indicate a jump request
 var on_ground = false                   # Flag to indicate if on the ground
 
@@ -26,7 +28,7 @@ func _ready() -> void:
 	max_contacts_reported = 10  # Adjust as needed
 
 # === Process Function ===
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	# Detect jump input
 	if Input.is_action_just_pressed("jump") and on_ground:
 		jump_requested = true
@@ -45,31 +47,25 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		# Retrieve contact positions and normals in **local coordinates**
 		var local_contact_point = self.to_local(state.get_contact_local_position(i))
 		var local_contact_normal = state.get_contact_local_normal(i).normalized()
-		
+
 		contact_points.append(local_contact_point)
 		contact_normals.append(local_contact_normal)
+	
 		
 	var add = func(acc, a):
-		if a.project(Vector2.UP).length_squared() < 0.1:
-			return acc
+		if abs(a.x) > 0.1:
+			return acc + a *0.01
 		return acc + a
-	var res_normal = contact_normals.reduce(add, Vector2.ZERO).normalized()
+	normal = contact_normals.reduce(add, Vector2.ZERO).normalized()
 
-	if res_normal.y < 0:
+	if normal.y < 0:
+		if not was_on_ground:
+			state.set_linear_velocity(velocity_last_frame.slide(normal) * HORIZONTAL_TO_VERTICAL_RATIO)
 		on_ground = true
 
 	# Apply the total normal force to counteract gravity
-	state.apply_central_force(-gravity_force.project(res_normal* 0.5))
-
-	print("current vel: ", state.get_linear_velocity())
-	
-	if not was_on_ground and on_ground:
-		print("Landed")
-		var velocity = state.get_linear_velocity()
-		print("Velocity: ", velocity)
-		var slide = velocity.slide(res_normal)
-		print("Slide: ", slide)
-		state.set_linear_velocity(slide)
+	if normal.length_squared() > 0:
+		state.apply_central_force(-gravity_force.project(normal) * 0.5)
 
 	# Get current velocity
 	var current_velocity = state.get_linear_velocity()
@@ -93,6 +89,8 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		applied_force *= AIR_CONTROL_MULTIPLIER
 
 	# Apply the adjusted force
+	if normal.length_squared() > 0:
+		applied_force = applied_force.slide(normal)
 	state.apply_central_force(applied_force)
 
 	# === Apply Damping ===
@@ -103,24 +101,23 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		state.apply_central_force(damping_force)
 
 	if jump_requested and on_ground:
-		state.apply_central_impulse(JUMP_FORCE * res_normal)
+		state.apply_central_impulse(JUMP_FORCE * normal)
 
 		# Get current velocity
 		var velocity = state.get_linear_velocity()
-
-		# Extract horizontal velocity component (perpendicular to res)
-		var horizontal_velocity = velocity.x  # Velocity perpendicular to res
+		var normal_velocity = velocity.project(normal)
+		var tangent_velocity =  velocity - normal_velocity
 
 		# Calculate transfer amount based on the defined ratio
-		var transfer_velocity = abs(horizontal_velocity) * HORIZONTAL_TO_VERTICAL_RATIO
-		velocity.x -= transfer_velocity * sign(horizontal_velocity) * (2 - HORIZONTAL_TO_VERTICAL_RATIO)
-		velocity += res_normal * transfer_velocity
+		var transfer_velocity = tangent_velocity * HORIZONTAL_TO_VERTICAL_RATIO
+		velocity -= transfer_velocity
+		velocity += normal_velocity.normalized() * transfer_velocity.length() * 0.05
 		state.set_linear_velocity(velocity)
-
-
 
 		# Reset the jump request
 		jump_requested = false
+	
+	velocity_last_frame = state.get_linear_velocity()
 
 	# Debugging
 	if DEBUG_MODE:
@@ -145,16 +142,8 @@ func _draw() -> void:
 	
 	# Visualize contact normals (Green)
 	var normal_color = Color(0, 1, 0)  # Green using RGB
-	for i in range(contact_points.size()):
-		var contact_point = contact_points[i]
-		var normal = contact_normals[i]
-		var scaled_normal = normal * 20  # Adjust length for visibility
-		draw_arrow(contact_point, contact_point + scaled_normal, normal_color)
-	
-	# Visualize contact points (Yellow)
-	var contact_point_color = Color(1, 1, 0)  # Yellow using RGB
-	for contact_point in contact_points:
-		draw_circle(contact_point, DRAW_SCALE, contact_point_color)
+	var scaled_normal = normal * 20  # Adjust length for visibility
+	draw_arrow(Vector2.ZERO, scaled_normal, normal_color)
 	
 	# Optional: Visualize Jump Force and Velocity Transfer (Purple)
 	if jump_requested and on_ground:
